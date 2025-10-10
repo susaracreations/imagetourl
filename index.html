@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instant Image Uploader (ImgBB)</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Inter font and custom colors -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght=100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+        }
+        /* Custom scrollbar for better feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e0e7ff;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4f46e5;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Main Application Container -->
+    <div class="w-full max-w-lg bg-white shadow-2xl rounded-xl p-8 space-y-6 transform hover:shadow-3xl transition duration-300">
+        
+        <h1 class="text-3xl font-extrabold text-indigo-700 text-center">
+            🔗 Instant Image Link Generator
+        </h1>
+        <p class="text-center text-gray-500">
+            Select one or more images to upload and get instant public URLs.
+        </p>
+
+        <!-- File Input Area -->
+        <div class="flex flex-col space-y-4">
+            <!-- 'multiple' attribute added here -->
+            <input type="file" id="imageInput" accept="image/*" multiple class="
+                w-full text-sm text-gray-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-indigo-50 file:text-indigo-700
+                hover:file:bg-indigo-100
+                cursor-pointer
+            ">
+            <button id="uploadButton" onclick="uploadImage()" class="
+                w-full py-3 px-4 
+                bg-indigo-600 hover:bg-indigo-700 
+                text-white font-bold 
+                rounded-lg shadow-md 
+                transition duration-150 ease-in-out
+                disabled:opacity-50 disabled:cursor-not-allowed
+            " disabled>
+                Upload Images and Get URLs
+            </button>
+        </div>
+
+        <!-- Status/Loading Area -->
+        <div id="statusMessage" class="min-h-[2.5rem] text-center text-sm font-medium">
+            <!-- Messages will appear here (e.g., Loading, Success, Error) -->
+        </div>
+
+        <!-- Results Area - Now a container for multiple result cards -->
+        <div id="resultsArea" class="hidden space-y-4 pt-4 border-t border-indigo-100">
+            <h2 id="resultsTitle" class="text-xl font-semibold text-gray-700">Upload Results</h2>
+            <div id="resultsContainer" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                <!-- Individual image result cards will be dynamically inserted here -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ImgBB API Key provided by the user
+        const IMGBB_API_KEY = "9e45c2a61b049286d6230275e700a932";
+        const API_URL = "https://api.imgbb.com/1/upload";
+
+        // DOM elements
+        const imageInput = document.getElementById('imageInput');
+        const uploadButton = document.getElementById('uploadButton');
+        const statusMessage = document.getElementById('statusMessage');
+        const resultsArea = document.getElementById('resultsArea');
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        // Event listener to enable the upload button when files are selected
+        imageInput.addEventListener('change', () => {
+            uploadButton.disabled = !imageInput.files.length;
+            // Clear previous results/messages on new file selection
+            statusMessage.textContent = '';
+            resultsArea.classList.add('hidden');
+            resultsContainer.innerHTML = '';
+        });
+
+        /**
+         * Converts the selected image file to a Base64 encoded string.
+         * @param {File} file - The image file object.
+         * @returns {Promise<string>} - A promise that resolves with the Base64 string (without the MIME prefix).
+         */
+        const fileToBase64 = (file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // Extract the base64 part (remove "data:image/jpeg;base64,")
+                    const base64String = reader.result.split(',')[1];
+                    resolve(base64String);
+                };
+                reader.onerror = (error) => reject(error);
+                reader.readAsDataURL(file);
+            });
+        };
+
+        /**
+         * Retries a fetch request using exponential backoff.
+         * @param {string} url - The URL to fetch.
+         * @param {object} options - The fetch options (method, headers, body).
+         * @param {number} maxRetries - Maximum number of retries.
+         * @param {number} delay - Initial delay in milliseconds.
+         */
+        const fetchWithRetry = async (url, options, maxRetries = 3, delay = 1000) => {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        // Throw error if response is not 2xx, allowing retry
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response;
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        throw error;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+                }
+            }
+        };
+
+        /**
+         * Creates and displays an individual result card for a successfully uploaded image.
+         * @param {string} imageUrl - The public URL returned by ImgBB.
+         * @param {string} fileName - The original file name.
+         */
+        const displayResult = (imageUrl, fileName) => {
+            const cardHtml = `
+                <div class="bg-gray-50 p-4 border border-green-300 rounded-lg shadow-sm">
+                    <p class="text-sm font-medium text-gray-600 mb-2 truncate" title="${fileName}">
+                        File: <span class="font-bold text-gray-800">${fileName}</span>
+                    </p>
+                    
+                    <!-- URL and Copy Button -->
+                    <div class="flex items-stretch space-x-2 mb-3">
+                        <input type="text" value="${imageUrl}" readonly
+                            class="flex-grow p-2 border border-green-300 rounded-l-lg bg-white text-green-800 text-xs font-mono overflow-hidden whitespace-nowrap"
+                            onclick="this.select()">
+                        <button onclick="copyUrl('${imageUrl}', this)" class="
+                            p-2 bg-green-600 hover:bg-green-700 
+                            text-white font-bold text-sm
+                            rounded-r-lg shadow-md 
+                            transition duration-150 ease-in-out
+                            flex items-center copy-btn
+                        ">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                                <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+
+                    <!-- Image Preview -->
+                    <img src="${imageUrl}" alt="Preview of ${fileName}" class="w-full h-24 object-contain rounded border border-gray-200">
+                </div>
+            `;
+
+            resultsContainer.innerHTML += cardHtml;
+            resultsArea.classList.remove('hidden');
+        };
+
+
+        /**
+         * Main function to handle image upload to ImgBB (now handles multiple files sequentially).
+         */
+        async function uploadImage() {
+            const files = imageInput.files;
+
+            if (files.length === 0) {
+                statusMessage.className = 'text-center text-red-600 font-medium';
+                statusMessage.textContent = 'Please select at least one image file first.';
+                return;
+            }
+
+            // Clear previous results
+            resultsContainer.innerHTML = '';
+            resultsArea.classList.add('hidden');
+            uploadButton.disabled = true;
+
+            let successfulUploads = 0;
+            let failedUploads = 0;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileNumber = i + 1;
+                const totalFiles = files.length;
+
+                // Show loading state for the current file
+                statusMessage.className = 'text-center text-indigo-600 font-medium animate-pulse';
+                statusMessage.textContent = `Uploading file ${fileNumber} of ${totalFiles}: ${file.name}...`;
+
+                // Basic validation
+                if (!file.type.startsWith('image/')) {
+                    statusMessage.textContent = `Skipped file ${file.name}: Invalid file type.`;
+                    failedUploads++;
+                    continue;
+                }
+
+                try {
+                    // 1. Convert file to Base64
+                    const base64Image = await fileToBase64(file);
+
+                    // 2. Prepare API payload
+                    const formData = new FormData();
+                    formData.append('key', IMGBB_API_KEY);
+                    formData.append('image', base64Image); // ImgBB accepts base64
+
+                    // 3. Make the API call with retry logic
+                    const response = await fetchWithRetry(API_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        const imageUrl = result.data.url;
+                        displayResult(imageUrl, file.name);
+                        successfulUploads++;
+                    } else {
+                        // Handle ImgBB-specific errors
+                        console.error(`ImgBB API Error for ${file.name}:`, result.error ? result.error.message : 'Unknown ImgBB API error.');
+                        failedUploads++;
+                    }
+                    
+                } catch (error) {
+                    // Handle network or general errors
+                    console.error(`Upload Error for ${file.name}:`, error);
+                    failedUploads++;
+                }
+            }
+            
+            // Final status update
+            uploadButton.disabled = false;
+            imageInput.value = ''; // Clear file input after upload attempt
+            
+            if (successfulUploads > 0) {
+                statusMessage.className = 'text-center text-green-600 font-bold';
+                statusMessage.textContent = `✅ Upload complete! ${successfulUploads} file(s) uploaded successfully. ${failedUploads > 0 ? `(${failedUploads} failed)` : ''}`;
+            } else {
+                statusMessage.className = 'text-center text-red-600 font-bold';
+                statusMessage.textContent = `❌ All uploads failed. Please check the console for details.`;
+            }
+        }
+
+        /**
+         * Copies the provided URL to the clipboard. This function is called from the dynamically generated buttons.
+         * @param {string} url - The URL to copy.
+         * @param {HTMLElement} buttonElement - The button that triggered the copy action (used for visual feedback).
+         */
+        function copyUrl(url, buttonElement) {
+            // Create a temporary input element to hold the text for copying
+            const tempInput = document.createElement('input');
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
+            
+            try {
+                tempInput.select();
+                tempInput.setSelectionRange(0, 99999); 
+                document.execCommand('copy');
+                
+                // Provide visual feedback
+                const originalText = buttonElement.innerHTML;
+                buttonElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 13.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg> Copied!';
+                buttonElement.classList.add('bg-green-700');
+                buttonElement.classList.remove('bg-green-600');
+
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalText;
+                    buttonElement.classList.remove('bg-green-700');
+                    buttonElement.classList.add('bg-green-600');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                statusMessage.className = 'text-center text-red-600 font-medium';
+                statusMessage.textContent = 'Copy failed. Please manually select and copy the URL.';
+            } finally {
+                // Remove the temporary input element
+                document.body.removeChild(tempInput);
+            }
+        }
+    </script>
+</body>
+</html>
