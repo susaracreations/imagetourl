@@ -3,56 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImgtoLink | Ultra Modern Image Hosting</title>
+    <title>ImgtoLink | Ultra Modern Dark Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         
+        :root {
+            --bg-dark: #020617;
+            --accent-blue: #3b82f6;
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(59, 130, 246, 0.2);
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at top left, #f8fafc, #e2e8f0);
+            background-color: var(--bg-dark);
+            color: #f8fafc;
             min-height: 100vh;
             margin: 0;
             display: flex;
             flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        /* Glass header - Standard flow for scrolling */
+        /* Animated Glowing Spots */
+        .glow-blob {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 70%);
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(60px);
+            animation: move 20s infinite alternate;
+        }
+
+        .blob-1 { top: -100px; left: -100px; }
+        .blob-2 { bottom: -100px; right: -100px; animation-delay: -5s; }
+
+        @keyframes move {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(100px, 100px) scale(1.2); }
+        }
+
+        /* Glass components */
         .glass-header {
             width: 100%;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 20px 0 rgba(31, 38, 135, 0.04);
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* Glass footer - Standard flow at the bottom of the page */
         .glass-footer {
             width: 100%;
-            margin-top: auto; /* Pushes footer to bottom of content */
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 -4px 20px 0 rgba(31, 38, 135, 0.04);
+            margin-top: auto;
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--glass-border);
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.7);
+            background: var(--glass-bg);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
         }
 
         .drop-zone-active {
-            border-color: #3b82f6 !important;
-            background: rgba(59, 130, 246, 0.05);
-            transform: scale(1.005);
+            border-color: var(--accent-blue) !important;
+            background: rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
         }
 
-        /* Animated loading dots */
         .loading-dots:after {
             content: '.';
             animation: dots 1.5s steps(5, end) infinite;
@@ -65,112 +92,124 @@
         }
 
         .result-card {
-            animation: slideUp 0.4s ease-out forwards;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: transform 0.3s ease;
+        }
+        .result-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(59, 130, 246, 0.5);
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        /* Custom scrollbar for Dark Mode */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; border: 2px solid var(--bg-dark); }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
     </style>
 </head>
 <body class="flex flex-col items-center justify-start">
 
-    <!-- Header Section - Now Scrolls with page -->
-    <header class="glass-header h-20 w-full">
+    <!-- Background Accents -->
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+
+    <!-- Header Section -->
+    <header class="glass-header h-20 w-full z-50">
         <div class="w-full px-8 h-full flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
                     </svg>
                 </div>
-                <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">
-                    Imgto<span class="text-blue-600">Link</span>
+                <h1 class="text-2xl font-extrabold text-white tracking-tight">
+                    Imgto<span class="text-blue-500">Link</span>
                 </h1>
             </div>
             
             <div class="hidden md:flex items-center gap-6">
-                <div class="inline-flex items-center px-3 py-1 text-[10px] font-bold tracking-widest text-blue-600 uppercase bg-blue-50 rounded-full border border-blue-100">
-                    V2.5 Stable
+                <div class="inline-flex items-center px-4 py-1.5 text-[10px] font-bold tracking-widest text-blue-400 uppercase bg-blue-500/10 rounded-full border border-blue-500/20">
+                    Blue System Active
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Main Content Intro -->
-    <div class="w-full px-8 text-center mt-12 mb-8">
-        <h2 class="text-4xl font-black text-slate-800 mb-2 tracking-tight">Upload Assets</h2>
-        <p class="text-slate-500 text-sm">Transform images into permanent links via ImgtoLink — fast, secure, and everywhere.</p>
+    <div class="w-full px-8 text-center mt-16 mb-12">
+        <h2 class="text-5xl font-black text-white mb-3 tracking-tighter">Upload Assets</h2>
+        <p class="text-slate-400 text-lg max-w-2xl mx-auto">Instantaneous image hosting with a premium blue-light architecture.</p>
     </div>
 
     <!-- Main App Wrapper -->
-    <main class="w-full space-y-8 px-8 mb-12">
+    <main class="w-full space-y-10 px-8 mb-20 flex flex-col items-center">
         
         <!-- Upload Engine -->
-        <div id="dropZone" class="glass-card rounded-[2.5rem] p-12 md:p-24 transition-all duration-300 border-2 border-dashed border-slate-200 group w-full">
-            <div class="flex flex-col items-center justify-center text-center space-y-8">
-                <!-- Icon Sphere -->
-                <div class="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center shadow-2xl shadow-blue-200 group-hover:scale-110 transition-transform duration-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        <div id="dropZone" class="glass-card rounded-[3rem] p-12 md:p-24 transition-all duration-500 border-2 border-dashed border-slate-800 group w-full cursor-pointer overflow-hidden relative">
+            <div class="flex flex-col items-center justify-center text-center space-y-8 relative z-10">
+                <!-- Glowing Icon Sphere -->
+                <div class="w-28 h-28 bg-blue-600/10 border border-blue-500/30 rounded-full flex items-center justify-center shadow-2xl shadow-blue-500/10 group-hover:scale-110 group-hover:bg-blue-600 group-hover:border-blue-400 transition-all duration-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-blue-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
                 </div>
 
                 <div class="space-y-3">
-                    <h2 class="text-3xl font-bold text-slate-800">Ready to host your images?</h2>
-                    <p class="text-slate-400 text-lg font-medium">Drag and drop anywhere on this page to start</p>
+                    <h2 class="text-4xl font-bold text-white tracking-tight">Drop files here</h2>
+                    <p class="text-slate-500 text-xl">Cloud delivery ready for your images</p>
                 </div>
 
-                <div class="flex items-center w-full max-w-md">
-                    <div class="h-px flex-1 bg-slate-200"></div>
-                    <span class="px-6 text-xs font-black text-slate-300 tracking-widest">OR</span>
-                    <div class="h-px flex-1 bg-slate-200"></div>
+                <div class="flex items-center w-full max-w-sm">
+                    <div class="h-px flex-1 bg-slate-800"></div>
+                    <span class="px-6 text-xs font-black text-slate-600 tracking-widest uppercase">Direct Upload</span>
+                    <div class="h-px flex-1 bg-slate-800"></div>
                 </div>
 
                 <input type="file" id="imageInput" accept="image/*" multiple class="hidden">
-                <button onclick="document.getElementById('imageInput').click()" class="px-12 py-4 bg-white text-slate-700 font-bold text-lg rounded-2xl border border-slate-200 hover:border-blue-400 hover:text-blue-600 transition-all shadow-sm">
-                    Select from Device
+                <button onclick="document.getElementById('imageInput').click()" class="px-14 py-5 bg-blue-600 text-white font-black text-xl rounded-2xl border border-blue-400/30 hover:bg-blue-500 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] transition-all transform active:scale-95">
+                    Browse Files
                 </button>
             </div>
         </div>
 
-        <!-- Action Button -->
-        <button id="uploadBtn" disabled class="w-full py-6 bg-slate-900 text-white text-xl font-black rounded-[2rem] shadow-2xl shadow-slate-300 disabled:opacity-20 disabled:cursor-not-allowed transform hover:-translate-y-1 active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-4">
-            <span id="btnText">Select images to proceed</span>
+        <!-- Action Button - Fixed to Blue Style -->
+        <button id="uploadBtn" disabled class="w-full py-7 bg-slate-800 text-slate-500 text-2xl font-black rounded-[2.5rem] shadow-2xl disabled:opacity-40 disabled:cursor-not-allowed transform hover:-translate-y-1 active:scale-[0.99] transition-all duration-300 flex items-center justify-center gap-4">
+            <span id="btnText">Selection Required</span>
         </button>
 
         <!-- Status & Feedback -->
-        <div id="statusBox" class="text-center h-8 text-lg font-bold transition-all duration-300"></div>
+        <div id="statusBox" class="text-center h-10 text-xl font-bold transition-all duration-300"></div>
 
-        <!-- Results Section - Responsive Grid -->
-        <section id="resultsSection" class="hidden space-y-8 pb-12">
-            <div class="flex items-center justify-between px-2">
-                <h3 class="text-2xl font-black text-slate-800">Your Live Links</h3>
-                <span id="countBadge" class="bg-blue-600 text-white text-sm font-black px-4 py-1.5 rounded-full shadow-lg shadow-blue-100">0 Files</span>
+        <!-- Results Section -->
+        <section id="resultsSection" class="hidden space-y-10 pb-20 w-full max-w-5xl">
+            <div class="flex items-center justify-between px-4 border-l-4 border-blue-600 ml-2">
+                <h3 class="text-3xl font-black text-white">Live Assets</h3>
+                <span id="countBadge" class="bg-blue-600/20 text-blue-400 text-sm font-black px-6 py-2 rounded-full border border-blue-500/30 shadow-lg">0 Files</span>
             </div>
-            <div id="resultsGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div id="resultsGrid" class="grid grid-cols-1 gap-8 place-items-center">
                 <!-- Result Cards Inject Here -->
             </div>
         </section>
     </main>
 
-    <!-- Footer Section - Now at the end of content and scrolls -->
-    <footer class="glass-footer h-14 w-full">
+    <!-- Footer Section -->
+    <footer class="glass-footer h-20 w-full">
         <div class="w-full px-8 h-full flex items-center justify-between">
-            <p class="text-slate-500 text-[10px] md:text-sm font-bold">
-                &copy; 2024 ImgtoLink
+            <p class="text-slate-500 text-sm font-bold">
+                &copy; 2024 <span class="text-white">ImgtoLink</span>
             </p>
-            <div class="flex items-center gap-6">
-                <p class="text-slate-400 text-[10px] md:text-sm font-semibold italic"></p>
-                <div class="h-4 w-px bg-slate-200"></div>
-                <p class="text-slate-400 text-[10px] md:text-sm font-bold">ImgBB</p>
+            <div class="flex items-center gap-8">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                    <p class="text-slate-400 text-sm font-bold">Server: Ready</p>
+                </div>
+                <div class="h-6 w-px bg-slate-800"></div>
+                <p class="text-slate-500 text-sm font-bold uppercase tracking-widest text-blue-500/50">Blue Mode v2.6</p>
             </div>
         </div>
     </footer>
@@ -195,12 +234,20 @@
             
             if (selectedFiles.length > 0) {
                 uploadBtn.disabled = false;
-                btnText.textContent = `Push ${selectedFiles.length} Image${selectedFiles.length > 1 ? 's' : ''} to Cloud`;
-                statusBox.className = "text-center text-blue-600 animate-pulse font-black";
-                statusBox.textContent = "READY FOR DEPLOYMENT";
+                // Transition to Blue Active State
+                uploadBtn.classList.remove('bg-slate-800', 'text-slate-500');
+                uploadBtn.classList.add('bg-blue-600', 'text-white', 'shadow-[0_0_30px_rgba(59,130,246,0.3)]');
+                
+                btnText.textContent = `Deploy ${selectedFiles.length} Object${selectedFiles.length > 1 ? 's' : ''}`;
+                statusBox.className = "text-center text-blue-400 animate-pulse font-black";
+                statusBox.textContent = "SEQUENCING READY";
             } else {
                 uploadBtn.disabled = true;
-                btnText.textContent = "Select images to proceed";
+                // Revert to Inactive State
+                uploadBtn.classList.add('bg-slate-800', 'text-slate-500');
+                uploadBtn.classList.remove('bg-blue-600', 'text-white', 'shadow-[0_0_30px_rgba(59,130,246,0.3)]');
+                
+                btnText.textContent = "Selection Required";
                 statusBox.textContent = "";
             }
         }
@@ -240,8 +287,8 @@
 
             for (let i = 0; i < selectedFiles.length; i++) {
                 const file = selectedFiles[i];
-                statusBox.className = "text-center text-slate-600 font-black tracking-widest";
-                statusBox.innerHTML = `<span class="loading-dots uppercase">Processing Node ${i+1}/${selectedFiles.length}</span>`;
+                statusBox.className = "text-center text-slate-500 font-black tracking-widest";
+                statusBox.innerHTML = `<span class="loading-dots uppercase">Uploading Node ${i+1}/${selectedFiles.length}</span>`;
 
                 try {
                     const reader = new FileReader();
@@ -268,29 +315,31 @@
                 }
             }
 
-            statusBox.className = "text-center text-green-600 font-black";
-            statusBox.textContent = `SYNC COMPLETE: ${successCount} ASSETS ONLINE`;
-            btnText.textContent = "Clear and New Session";
+            statusBox.className = "text-center text-green-400 font-black";
+            statusBox.textContent = "DEPLOYMENT COMPLETE";
+            
+            // Maintain Blue Theme for New Session Button
+            btnText.textContent = "Start New Session";
             uploadBtn.disabled = false;
             uploadBtn.onclick = () => window.location.reload();
         }
 
         uploadBtn.addEventListener('click', () => {
-            if (btnText.textContent.includes('Push')) uploadFiles();
+            if (btnText.textContent.includes('Deploy')) uploadFiles();
         });
 
         function renderResultCard(url, name) {
             const div = document.createElement('div');
-            div.className = "result-card glass-card p-6 rounded-[2rem] flex items-center gap-6 group overflow-hidden border-blue-50";
+            div.className = "result-card glass-card p-8 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-8 group w-full max-w-3xl";
             div.innerHTML = `
-                <div class="w-20 h-20 rounded-2xl overflow-hidden bg-white flex-shrink-0 border border-slate-100 shadow-inner">
-                    <img src="${url}" class="w-full h-full object-cover">
+                <div class="w-32 h-32 rounded-3xl overflow-hidden bg-slate-900 flex-shrink-0 border border-slate-800 shadow-2xl relative">
+                    <img src="${url}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                 </div>
-                <div class="flex-1 w-full min-w-0">
-                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 truncate">${name}</p>
-                    <div class="flex gap-3">
-                        <input type="text" readonly value="${url}" class="flex-1 bg-white border border-slate-100 rounded-xl px-4 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-100 font-mono min-w-0 shadow-sm">
-                        <button onclick="copyToClipboard('${url}', this)" class="bg-slate-900 text-white px-6 py-2 rounded-xl text-sm font-black hover:bg-blue-600 transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-lg">
+                <div class="flex-1 w-full min-w-0 flex flex-col justify-center">
+                    <p class="text-sm font-black text-blue-400 uppercase tracking-widest mb-3 truncate">${name}</p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <input type="text" readonly value="${url}" class="flex-1 bg-slate-950 border border-slate-800 rounded-2xl px-6 py-4 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500/40 font-mono min-w-0 shadow-inner">
+                        <button onclick="copyToClipboard('${url}', this)" class="bg-blue-600 text-white px-8 py-4 rounded-2xl text-base font-black hover:bg-blue-500 transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-[0_0_20px_rgba(59,130,246,0.2)] active:scale-95">
                             <span>Copy Link</span>
                         </button>
                     </div>
@@ -310,10 +359,10 @@
                 document.body.removeChild(el);
                 
                 btn.innerHTML = '<span>Copied!</span>';
-                btn.classList.replace('bg-slate-900', 'bg-green-600');
+                btn.classList.replace('bg-blue-600', 'bg-green-600');
                 setTimeout(() => {
                     btn.innerHTML = originalText;
-                    btn.classList.replace('bg-green-600', 'bg-slate-900');
+                    btn.classList.replace('bg-green-600', 'bg-blue-600');
                 }, 2000);
             } catch (err) {
                 console.error("Copy failed", err);
