@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ImgtoLink | Professional Image Hosting</title>
-        <!-- Favicon -->
-    <link rel="icon" type="image/png" href="https://i.ibb.co/jsk4jcj/28ce743bb8ae.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/vvKtw78N/29d29ed5ce34.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         
         :root {
-            --bg-dark: #020617;
+            --bg-dark: #000000;
             --accent-blue: #3b82f6;
-            --glass-bg: rgba(15, 23, 42, 0.6);
-            --glass-border: rgba(59, 130, 246, 0.15);
+            --glass-bg: rgba(10, 10, 10, 0.7);
+            --glass-border: rgba(59, 130, 246, 0.2);
         }
 
         body {
@@ -32,29 +34,29 @@
         /* Animated Glowing Spots */
         .glow-blob {
             position: fixed;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0) 70%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 70%);
             border-radius: 50%;
             z-index: -1;
-            filter: blur(60px);
+            filter: blur(80px);
             animation: move 20s infinite alternate;
         }
 
-        .blob-1 { top: -100px; left: -100px; }
-        .blob-2 { bottom: -100px; right: -100px; animation-delay: -5s; }
+        .blob-1 { top: -150px; left: -150px; }
+        .blob-2 { bottom: -150px; right: -150px; animation-delay: -5s; }
 
         @keyframes move {
             from { transform: translate(0, 0) scale(1); }
-            to { transform: translate(100px, 100px) scale(1.2); }
+            to { transform: translate(120px, 120px) scale(1.1); }
         }
 
         /* Glass components */
         .glass-header {
             width: 100%;
-            background: rgba(2, 6, 23, 0.8);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
         }
 
@@ -63,13 +65,13 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
         }
 
         .drop-zone-active {
             border-color: var(--accent-blue) !important;
-            background: rgba(59, 130, 246, 0.1);
-            box-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
+            background: rgba(59, 130, 246, 0.08);
+            box-shadow: 0 0 50px rgba(59, 130, 246, 0.25);
         }
 
         .loading-dots:after {
@@ -89,7 +91,7 @@
         }
         .result-card:hover {
             transform: translateY(-4px);
-            border-color: rgba(59, 130, 246, 0.4);
+            border-color: rgba(59, 130, 246, 0.5);
         }
 
         @keyframes slideUp {
@@ -99,9 +101,9 @@
 
         /* Custom scrollbar */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; border: 2px solid var(--bg-dark); }
-        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #111; border-radius: 10px; border: 2px solid #000; }
+        ::-webkit-scrollbar-thumb:hover { background: #222; }
     </style>
 </head>
 <body class="flex flex-col items-center justify-start">
@@ -136,7 +138,7 @@
 
     <main class="w-full max-w-7xl space-y-10 px-8 mb-20 flex flex-col items-center flex-grow">
         
-        <div id="dropZone" class="glass-card rounded-[3rem] p-12 md:p-24 transition-all duration-500 border-2 border-dashed border-slate-800 group w-full cursor-pointer overflow-hidden relative">
+        <div id="dropZone" class="glass-card rounded-[3rem] p-12 md:p-24 transition-all duration-500 border-2 border-dashed border-zinc-800 group w-full cursor-pointer overflow-hidden relative">
             <div class="flex flex-col items-center justify-center text-center space-y-8 relative z-10">
                 <div class="w-28 h-28 bg-blue-600/10 border border-blue-500/30 rounded-full flex items-center justify-center shadow-2xl shadow-blue-500/10 group-hover:scale-110 group-hover:bg-blue-600 group-hover:border-blue-400 transition-all duration-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-blue-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -146,13 +148,13 @@
 
                 <div class="space-y-3">
                     <h2 class="text-4xl font-bold text-white tracking-tight">Drop files here</h2>
-                    <p class="text-slate-500 text-xl">Supported formats: JPG, PNG, WEBP, GIF</p>
+                    <p class="text-zinc-500 text-xl">Supported formats: JPG, PNG, WEBP, GIF</p>
                 </div>
 
                 <div class="flex items-center w-full max-w-sm">
-                    <div class="h-px flex-1 bg-slate-800"></div>
-                    <span class="px-6 text-xs font-black text-slate-600 tracking-widest uppercase">Select Manually</span>
-                    <div class="h-px flex-1 bg-slate-800"></div>
+                    <div class="h-px flex-1 bg-zinc-900"></div>
+                    <span class="px-6 text-xs font-black text-zinc-600 tracking-widest uppercase">Select Manually</span>
+                    <div class="h-px flex-1 bg-zinc-900"></div>
                 </div>
 
                 <input type="file" id="imageInput" accept="image/*" multiple class="hidden">
@@ -162,7 +164,7 @@
             </div>
         </div>
 
-        <button id="uploadBtn" disabled class="w-full py-7 bg-slate-800 text-slate-500 text-2xl font-black rounded-[2.5rem] shadow-2xl disabled:opacity-40 disabled:cursor-not-allowed transform hover:-translate-y-1 active:scale-[0.99] transition-all duration-300 flex items-center justify-center gap-4">
+        <button id="uploadBtn" disabled class="w-full py-7 bg-zinc-900 text-zinc-600 text-2xl font-black rounded-[2.5rem] shadow-2xl disabled:opacity-40 disabled:cursor-not-allowed transform hover:-translate-y-1 active:scale-[0.99] transition-all duration-300 flex items-center justify-center gap-4">
             <span id="btnText">Waiting for Selection</span>
         </button>
 
@@ -178,7 +180,7 @@
     </main>
 
     <!-- Refined Footer -->
-    <footer class="w-full border-t border-slate-900 bg-slate-950/40 py-12">
+    <footer class="w-full border-t border-zinc-900 bg-black/40 py-12">
         <div class="max-w-7xl mx-auto px-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                 <div class="flex flex-col items-center md:items-start gap-4">
@@ -190,23 +192,23 @@
                         </div>
                         <span class="text-lg font-bold text-white tracking-tighter">ImgtoLink</span>
                     </div>
-                    <p class="text-slate-500 text-sm max-w-xs text-center md:text-left leading-relaxed">
+                    <p class="text-zinc-500 text-sm max-w-xs text-center md:text-left leading-relaxed">
                         Secure and permanent image hosting architecture optimized for speed.
                     </p>
                 </div>
 
                 <div class="flex flex-col items-center md:items-end gap-3">
-                    <div class="flex items-center gap-3 bg-slate-900/50 px-4 py-2 rounded-full border border-slate-800">
+                    <div class="flex items-center gap-3 bg-zinc-900/40 px-4 py-2 rounded-full border border-zinc-800">
                         <span class="relative flex h-2 w-2">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                         </span>
-                        <span class="text-[11px] font-bold text-slate-300 uppercase tracking-widest">Global CDN: Operational</span>
+                        <span class="text-[11px] font-bold text-zinc-300 uppercase tracking-widest">Global CDN: Operational</span>
                     </div>
                 </div>
             </div>
             
-            <div class="mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-slate-600 uppercase tracking-[0.2em]">
+            <div class="mt-12 pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-zinc-600 uppercase tracking-[0.2em]">
                 <p>© 2024 ImgtoLink Architecture. All rights reserved.</p>
                 <p>Powered by ImgBB Cloud Engine</p>
             </div>
@@ -233,7 +235,7 @@
             
             if (selectedFiles.length > 0) {
                 uploadBtn.disabled = false;
-                uploadBtn.classList.remove('bg-slate-800', 'text-slate-500');
+                uploadBtn.classList.remove('bg-zinc-900', 'text-zinc-600');
                 uploadBtn.classList.add('bg-blue-600', 'text-white', 'shadow-[0_0_30px_rgba(59,130,246,0.3)]');
                 
                 btnText.textContent = `Deploy ${selectedFiles.length} Object${selectedFiles.length > 1 ? 's' : ''}`;
@@ -241,7 +243,7 @@
                 statusBox.textContent = "SEQUENCING READY";
             } else {
                 uploadBtn.disabled = true;
-                uploadBtn.classList.add('bg-slate-800', 'text-slate-500');
+                uploadBtn.classList.add('bg-zinc-900', 'text-zinc-600');
                 uploadBtn.classList.remove('bg-blue-600', 'text-white', 'shadow-[0_0_30px_rgba(59,130,246,0.3)]');
                 
                 btnText.textContent = "Waiting for Selection";
@@ -284,7 +286,7 @@
 
             for (let i = 0; i < selectedFiles.length; i++) {
                 const file = selectedFiles[i];
-                statusBox.className = "text-center text-slate-500 font-black tracking-widest";
+                statusBox.className = "text-center text-zinc-500 font-black tracking-widest";
                 statusBox.innerHTML = `<span class="loading-dots uppercase">Processing Node ${i+1}/${selectedFiles.length}</span>`;
 
                 try {
@@ -327,13 +329,13 @@
             const div = document.createElement('div');
             div.className = "result-card glass-card p-8 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-8 group w-full max-w-4xl";
             div.innerHTML = `
-                <div class="w-32 h-32 rounded-3xl overflow-hidden bg-slate-900 flex-shrink-0 border border-slate-800 shadow-2xl relative">
+                <div class="w-32 h-32 rounded-3xl overflow-hidden bg-black flex-shrink-0 border border-zinc-900 shadow-2xl relative">
                     <img src="${url}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                 </div>
                 <div class="flex-1 w-full min-w-0 flex flex-col justify-center">
                     <p class="text-sm font-black text-blue-400 uppercase tracking-widest mb-3 truncate">${name}</p>
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <input type="text" readonly value="${url}" class="flex-1 bg-slate-950 border border-slate-800 rounded-2xl px-6 py-4 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500/40 font-mono min-w-0 shadow-inner">
+                        <input type="text" readonly value="${url}" class="flex-1 bg-black border border-zinc-800 rounded-2xl px-6 py-4 text-sm text-zinc-300 focus:outline-none focus:ring-1 focus:ring-blue-500/40 font-mono min-w-0 shadow-inner">
                         <button onclick="copyToClipboard('${url}', this)" class="bg-blue-600 text-white px-8 py-4 rounded-2xl text-base font-black hover:bg-blue-500 transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-[0_0_20px_rgba(59,130,246,0.2)] active:scale-95">
                             <span>Copy Link</span>
                         </button>
