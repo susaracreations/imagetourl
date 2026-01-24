@@ -3,419 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instant Image Uploader (ImgBB)</title>
-    <!-- Load Tailwind CSS -->
+    <title>QuickLink | Ultra Modern Image Hosting</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Configure Inter font and custom colors -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f7f9; /* Soft, professional background */
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top left, #f8fafc, #e2e8f0);
+            min-height: 100vh;
         }
-        /* Custom scrollbar for better feel */
-        ::-webkit-scrollbar {
-            width: 8px;
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
-        ::-webkit-scrollbar-track {
-            background: #e0e7ff;
-            border-radius: 10px;
+
+        .drop-zone-active {
+            border-color: #3b82f6 !important;
+            background: rgba(59, 130, 246, 0.05);
+            transform: scale(1.01);
         }
-        ::-webkit-scrollbar-thumb {
-            background: #1e40af; /* Darker blue thumb */
-            border-radius: 10px;
+
+        /* Animated loading dots */
+        .loading-dots:after {
+            content: '.';
+            animation: dots 1.5s steps(5, end) infinite;
         }
-        /* Custom class for drag-over state - professional blue glow effect */
-        .drag-over {
-            border: 3px dashed #3b82f6; /* Blue-500 */
-            background-color: #eff6ff; /* Blue-50 */
-            box-shadow: 0 0 0 4px #bfdbfe; /* Blue-200 outline */
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80%, 100% { content: ''; }
         }
+
+        .result-card {
+            animation: slideUp 0.4s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="min-h-screen flex justify-center p-10">
+<body class="flex flex-col items-center justify-start p-4 md:p-10">
 
-    <!-- Main Application Container: Clean white card with strong shadow -->
-    <div id="appContainer" class="w-full max-w-4xl bg-white shadow-2xl rounded-xl p-10 space-y-8 transition duration-300">
+    <!-- Header Section -->
+    <header class="w-full max-w-2xl text-center mb-12 animate-fade-in">
+        <div class="inline-flex items-center px-3 py-1 mb-4 text-xs font-bold tracking-widest text-blue-600 uppercase bg-blue-100 rounded-full">
+            Lightning Fast Hosting
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
+            Quick<span class="text-blue-600">Link</span>
+        </h1>
+        <p class="text-slate-500 text-lg max-w-md mx-auto leading-relaxed">
+            The professional way to transform images into instant public links. Drag, paste, or browse.
+        </p>
+    </header>
+
+    <!-- Main App Wrapper -->
+    <main class="w-full max-w-2xl space-y-8">
         
-        <header class="space-y-2">
-            <h1 class="text-4xl font-extrabold text-gray-800 text-center">
-                🌐 Image URL QuickLink
-            </h1>
-            <p class="text-center text-gray-500 text-lg">
-                Upload via **Drag & Drop**, **Paste** from clipboard, or **Select** files. Get instant, public image URLs.
-            </p>
-        </header>
+        <!-- Upload Engine -->
+        <div id="dropZone" class="glass-card rounded-3xl p-8 md:p-12 transition-all duration-300 border-2 border-dashed border-slate-200 group">
+            <div class="flex flex-col items-center justify-center text-center space-y-6">
+                <!-- Icon Sphere -->
+                <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-200 group-hover:scale-110 transition-transform duration-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                </div>
 
-        <!-- Drop Zone/File Input Area -->
-        <div id="dropZone" class="flex flex-col space-y-6 p-8 border-2 border-dashed border-gray-300 rounded-xl transition duration-300 hover:border-blue-500">
-            
-            <!-- Icon and main instruction -->
-            <div class="flex flex-col items-center justify-center space-y-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-                </svg>
-                <p class="text-center text-xl font-semibold text-gray-700">
-                    Drop your images here, or click to select
-                </p>
-            </div>
-            
-            <div class="flex items-center justify-center space-x-2">
-                <div class="h-px w-1/4 bg-gray-200"></div>
-                <span class="text-gray-400 font-medium">OR</span>
-                <div class="h-px w-1/4 bg-gray-200"></div>
-            </div>
+                <div class="space-y-2">
+                    <h2 class="text-xl font-bold text-slate-800">Drop your files here</h2>
+                    <p class="text-slate-400 text-sm font-medium">PNG, JPG, GIF or BMP up to 32MB</p>
+                </div>
 
-            <!-- Custom styled file input -->
-            <input type="file" id="imageInput" accept="image/*" multiple class="
-                w-full text-sm text-gray-500 mt-4
-                file:mr-4 file:py-3 file:px-6
-                file:rounded-full file:border-0
-                file:text-base file:font-bold
-                file:bg-blue-100 file:text-blue-700
-                hover:file:bg-blue-200
-                cursor-pointer
-            ">
-            <button id="uploadButton" onclick="uploadImage()" class="
-                w-full py-4 px-4 
-                bg-blue-600 hover:bg-blue-700 
-                text-white font-extrabold text-lg
-                rounded-xl shadow-lg hover:shadow-xl
-                transition duration-200 ease-in-out
-                disabled:opacity-40 disabled:shadow-none disabled:cursor-not-allowed
-                tracking-wider
-            " disabled>
-                🚀 UPLOAD & GET LINKS
-            </button>
-        </div>
+                <div class="flex items-center w-full max-w-xs">
+                    <div class="h-px flex-1 bg-slate-100"></div>
+                    <span class="px-4 text-xs font-bold text-slate-300">OR</span>
+                    <div class="h-px flex-1 bg-slate-100"></div>
+                </div>
 
-        <!-- Status/Loading Area -->
-        <div id="statusMessage" class="min-h-[2.5rem] text-center text-base font-medium">
-            <!-- Messages will appear here (e.g., Loading, Success, Error) -->
-        </div>
-
-        <!-- Results Area - Clean, separated section for uploaded images -->
-        <div id="resultsArea" class="hidden space-y-6 pt-6 border-t border-gray-100">
-            <h2 id="resultsTitle" class="text-2xl font-bold text-gray-700">Successful Uploads</h2>
-            <div id="resultsContainer" class="space-y-4 max-h-[70vh] overflow-y-auto pr-3">
-                <!-- Individual image result cards will be dynamically inserted here -->
+                <input type="file" id="imageInput" accept="image/*" multiple class="hidden">
+                <button onclick="document.getElementById('imageInput').click()" class="px-8 py-3 bg-white text-slate-700 font-bold rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
+                    Browse Files
+                </button>
             </div>
         </div>
 
-    </div>
+        <!-- Action Button -->
+        <button id="uploadBtn" disabled class="w-full py-5 bg-slate-900 text-white font-bold rounded-2xl shadow-2xl shadow-slate-200 disabled:opacity-20 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3">
+            <span id="btnText">Ready to Upload</span>
+        </button>
+
+        <!-- Status & Feedback -->
+        <div id="statusBox" class="text-center h-6 text-sm font-semibold transition-all duration-300"></div>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-extrabold text-slate-800">Uploaded Assets</h3>
+                <span id="countBadge" class="bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-lg">0 Files</span>
+            </div>
+            <div id="resultsGrid" class="space-y-4">
+                <!-- Result Cards Inject Here -->
+            </div>
+        </section>
+    </main>
 
     <script>
-        // ImgBB API Key provided by the user
-        const IMGBB_API_KEY = "9e45c2a61b049286d6230275e700a932";
+        const API_KEY = "9e45c2a61b049286d6230275e700a932";
         const API_URL = "https://api.imgbb.com/1/upload";
 
-        // DOM elements
-        const imageInput = document.getElementById('imageInput');
-        const uploadButton = document.getElementById('uploadButton');
-        const statusMessage = document.getElementById('statusMessage');
-        const resultsArea = document.getElementById('resultsArea');
-        const resultsContainer = document.getElementById('resultsContainer');
         const dropZone = document.getElementById('dropZone');
+        const imageInput = document.getElementById('imageInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const btnText = document.getElementById('btnText');
+        const statusBox = document.getElementById('statusBox');
+        const resultsSection = document.getElementById('resultsSection');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const countBadge = document.getElementById('countBadge');
 
-        // --- COMMON FILE INJECTION LOGIC ---
+        // State Management
+        let selectedFiles = [];
 
-        /**
-         * Centralized function to inject files into the input, update the UI, and provide feedback.
-         * @param {File[]} files - An array of image File objects.
-         * @param {string} source - 'Pasted' or 'Dropped'.
-         */
-        function injectFilesToInput(files, source) {
-            let imageFiles = files.filter(file => file.type.startsWith('image/'));
+        // --- File Handling ---
 
-            if (imageFiles.length === 0) {
-                statusMessage.className = 'text-center text-red-600 font-medium';
-                statusMessage.textContent = `No valid images found in the ${source} content.`;
-                return;
-            }
+        function updateFileList(files) {
+            selectedFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
             
-            // Create a DataTransfer object to hold the new file list
-            const dataTransfer = new DataTransfer();
-            imageFiles.forEach(file => dataTransfer.items.add(file));
-            
-            // Set the new file list on the input element
-            imageInput.files = dataTransfer.files;
-
-            // Display user feedback
-            statusMessage.className = 'text-center text-blue-600 font-medium';
-            statusMessage.textContent = `${source} ${imageFiles.length} image(s) loaded. Ready to upload.`;
-
-            // Manually trigger the 'change' event to update UI and enable button
-            imageInput.dispatchEvent(new Event('change'));
-        }
-
-        // --- DRAG AND DROP FUNCTIONALITY START ---
-
-        // Attach drag listeners to the dedicated drop zone
-        dropZone.addEventListener('dragenter', handleDragEnter);
-        dropZone.addEventListener('dragover', handleDragOver);
-        dropZone.addEventListener('dragleave', handleDragLeave);
-        dropZone.addEventListener('drop', handleDrop);
-
-        function handleDragEnter(event) {
-            event.preventDefault(); 
-            dropZone.classList.add('drag-over');
-        }
-
-        function handleDragOver(event) {
-            event.preventDefault(); 
-            dropZone.classList.add('drag-over');
-            event.dataTransfer.dropEffect = 'copy';
-        }
-
-        function handleDragLeave(event) {
-            // Check if the related target is outside the dropZone element
-            if (event.relatedTarget && !dropZone.contains(event.relatedTarget)) {
-                dropZone.classList.remove('drag-over');
-            }
-        }
-
-        function handleDrop(event) {
-            event.preventDefault();
-            dropZone.classList.remove('drag-over');
-
-            const files = Array.from(event.dataTransfer.files);
-            
-            if (files.length > 0) {
-                injectFilesToInput(files, 'Dropped');
+            if (selectedFiles.length > 0) {
+                uploadBtn.disabled = false;
+                btnText.textContent = `Upload ${selectedFiles.length} Image${selectedFiles.length > 1 ? 's' : ''}`;
+                statusBox.className = "text-center text-blue-600 animate-pulse";
+                statusBox.textContent = "Click the black button to start";
             } else {
-                 statusMessage.className = 'text-center text-red-600 font-medium';
-                 statusMessage.textContent = 'Could not process dropped item.';
+                uploadBtn.disabled = true;
+                btnText.textContent = "Ready to Upload";
             }
         }
-        // --- DRAG AND DROP FUNCTIONALITY END ---
 
+        imageInput.addEventListener('change', (e) => updateFileList(e.target.files));
 
-        // --- PASTE FUNCTIONALITY START ---
-        document.addEventListener('paste', handlePaste);
-
-        /**
-         * Handles paste events, checks for image data in the clipboard, and updates the file input.
-         */
-        function handlePaste(event) {
-            const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-            let filesFromPaste = [];
-
-            for (const item of items) {
-                if (item.kind === 'file' && item.type.startsWith('image/')) {
-                    const file = item.getAsFile();
-                    if (file) {
-                        filesFromPaste.push(file);
-                    }
-                }
-            }
-
-            if (filesFromPaste.length > 0) {
-                event.preventDefault();
-                injectFilesToInput(filesFromPaste, 'Pasted');
-            }
-        }
-        // --- PASTE FUNCTIONALITY END ---
-
-
-        // Event listener to enable the upload button when files are selected
-        imageInput.addEventListener('change', () => {
-            uploadButton.disabled = !imageInput.files.length;
-            // Clear previous results/messages on new file selection
-            statusMessage.textContent = '';
-            resultsArea.classList.add('hidden');
-            resultsContainer.innerHTML = '';
+        // Drag & Drop Listeners
+        ['dragenter', 'dragover'].forEach(name => {
+            dropZone.addEventListener(name, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drop-zone-active');
+            });
         });
 
-        /**
-         * Converts the selected image file to a Base64 encoded string.
-         * @param {File} file - The image file object.
-         * @returns {Promise<string>} - A promise that resolves with the Base64 string (without the MIME prefix).
-         */
-        const fileToBase64 = (file) => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    // Extract the base64 part (remove "data:image/jpeg;base64,")
-                    const base64String = reader.result.split(',')[1];
-                    resolve(base64String);
-                };
-                reader.onerror = (error) => reject(error);
-                reader.readAsDataURL(file);
+        ['dragleave', 'drop'].forEach(name => {
+            dropZone.addEventListener(name, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drop-zone-active');
+                if (name === 'drop') updateFileList(e.dataTransfer.files);
             });
-        };
+        });
 
-        /**
-         * Retries a fetch request using exponential backoff.
-         */
-        const fetchWithRetry = async (url, options, maxRetries = 3, delay = 1000) => {
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response;
-                } catch (error) {
-                    if (i === maxRetries - 1) {
-                        throw error;
-                    }
-                    await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
-                }
+        // Paste Listener
+        document.addEventListener('paste', (e) => {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            const pastedFiles = [];
+            for (let item of items) {
+                if (item.kind === 'file') pastedFiles.push(item.getAsFile());
             }
-        };
+            if (pastedFiles.length > 0) updateFileList(pastedFiles);
+        });
 
-        /**
-         * Creates and displays an individual result card for a successfully uploaded image.
-         */
-        const displayResult = (imageUrl, fileName) => {
-            const cardHtml = `
-                <!-- Professional result card design -->
-                <div class="flex items-center p-4 bg-white border border-gray-200 rounded-xl shadow-md space-x-4">
-                    
-                    <!-- Preview Image -->
-                    <div class="flex-shrink-0 w-24 h-24 overflow-hidden rounded-lg bg-gray-100 border border-gray-300">
-                        <img src="${imageUrl}" alt="Preview of ${fileName}" class="w-full h-full object-contain">
-                    </div>
+        // --- Upload Logic ---
 
-                    <!-- File Info and URL -->
-                    <div class="flex-grow space-y-1 min-w-0">
-                        <p class="text-sm font-semibold text-gray-800 truncate" title="${fileName}">
-                            File: ${fileName}
-                        </p>
-                        
-                        <!-- URL Input Field -->
-                        <div class="flex items-stretch">
-                            <input type="text" value="${imageUrl}" readonly
-                                class="flex-grow p-2 border border-green-300 rounded-l-lg bg-green-50 text-green-800 text-xs font-mono overflow-hidden whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-green-400"
-                                onclick="this.select()">
-                            <button onclick="copyUrl('${imageUrl}', this)" class="
-                                p-2 bg-green-600 hover:bg-green-700 
-                                text-white font-semibold text-sm
-                                rounded-r-lg shadow-md 
-                                transition duration-150 ease-in-out
-                                flex items-center copy-btn
-                                min-w-[70px]
-                            ">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
+        async function uploadFiles() {
+            uploadBtn.disabled = true;
+            resultsSection.classList.remove('hidden');
+            let successCount = 0;
 
-            resultsContainer.innerHTML += cardHtml;
-            resultsArea.classList.remove('hidden');
-        };
-
-
-        /**
-         * Main function to handle image upload to ImgBB (now handles multiple files sequentially).
-         */
-        async function uploadImage() {
-            const files = imageInput.files;
-
-            if (files.length === 0) {
-                statusMessage.className = 'text-center text-red-600 font-medium';
-                statusMessage.textContent = 'Please select or drop at least one image file.';
-                return;
-            }
-
-            // Clear previous results
-            resultsContainer.innerHTML = '';
-            resultsArea.classList.add('hidden');
-            uploadButton.disabled = true;
-
-            let successfulUploads = 0;
-            let failedUploads = 0;
-
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const fileNumber = i + 1;
-                const totalFiles = files.length;
-
-                // Show loading state for the current file
-                statusMessage.className = 'text-center text-blue-600 font-medium animate-pulse';
-                statusMessage.textContent = `Processing ${fileNumber} of ${totalFiles}: Uploading "${file.name}"...`;
-
-                // Basic validation
-                if (!file.type.startsWith('image/')) {
-                    statusMessage.textContent = `Skipped file ${file.name}: Invalid file type.`;
-                    failedUploads++;
-                    continue;
-                }
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                statusBox.className = "text-center text-slate-600 font-medium";
+                statusBox.innerHTML = `<span class="loading-dots">Uploading ${i+1}/${selectedFiles.length}</span>`;
 
                 try {
-                    const base64Image = await fileToBase64(file);
-
-                    const formData = new FormData();
-                    formData.append('key', IMGBB_API_KEY);
-                    formData.append('image', base64Image); 
-
-                    const response = await fetchWithRetry(API_URL, {
-                        method: 'POST',
-                        body: formData
+                    const reader = new FileReader();
+                    const base64Promise = new Promise(resolve => {
+                        reader.onload = () => resolve(reader.result.split(',')[1]);
+                        reader.readAsDataURL(file);
                     });
+                    
+                    const base64Data = await base64Promise;
+                    const formData = new FormData();
+                    formData.append('key', API_KEY);
+                    formData.append('image', base64Data);
 
+                    const response = await fetch(API_URL, { method: 'POST', body: formData });
                     const result = await response.json();
 
                     if (result.success) {
-                        const imageUrl = result.data.url;
-                        displayResult(imageUrl, file.name);
-                        successfulUploads++;
-                    } else {
-                        console.error(`ImgBB API Error for ${file.name}:`, result.error ? result.error.message : 'Unknown ImgBB API error.');
-                        failedUploads++;
+                        renderResultCard(result.data.url, file.name);
+                        successCount++;
+                        countBadge.textContent = `${successCount} Files`;
                     }
-                    
-                } catch (error) {
-                    console.error(`Upload Error for ${file.name}:`, error);
-                    failedUploads++;
+                } catch (err) {
+                    console.error("Upload failed", err);
                 }
             }
-            
-            // Final status update
-            uploadButton.disabled = false;
-            
-            if (successfulUploads > 0) {
-                statusMessage.className = 'text-center text-green-600 font-bold';
-                statusMessage.textContent = `🎉 Upload Complete! ${successfulUploads} file(s) uploaded successfully. ${failedUploads > 0 ? `(${failedUploads} failed)` : ''}`;
-            } else {
-                statusMessage.className = 'text-center text-red-600 font-bold';
-                statusMessage.textContent = `❌ Upload Failed. No files were successfully uploaded.`;
-            }
 
-            // Clear file input to allow re-uploading the same files if needed
-            imageInput.value = '';
+            statusBox.className = "text-center text-green-600 font-bold";
+            statusBox.textContent = `Completed: ${successCount} successfully hosted.`;
+            btnText.textContent = "Start New Upload";
+            uploadBtn.disabled = false;
+            uploadBtn.onclick = () => window.location.reload();
         }
 
-        /**
-         * Copies the provided URL to the clipboard.
-         */
-        function copyUrl(url, buttonElement) {
-            const tempInput = document.createElement('input');
-            tempInput.value = url;
-            document.body.appendChild(tempInput);
-            
+        uploadBtn.addEventListener('click', () => {
+            if (btnText.textContent.includes('Upload')) uploadFiles();
+        });
+
+        // --- UI Rendering ---
+
+        function renderResultCard(url, name) {
+            const div = document.createElement('div');
+            div.className = "result-card glass-card p-4 rounded-2xl flex items-center gap-4 group";
+            div.innerHTML = `
+                <div class="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-100">
+                    <img src="${url}" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 truncate">${name}</p>
+                    <div class="flex gap-2">
+                        <input type="text" readonly value="${url}" class="flex-1 bg-slate-50 border border-slate-100 rounded-lg px-3 py-1.5 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-100 font-mono">
+                        <button onclick="copyToClipboard('${url}', this)" class="bg-slate-900 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors flex items-center gap-2">
+                            <span>Copy</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            resultsGrid.prepend(div);
+        }
+
+        async function copyToClipboard(text, btn) {
+            const originalText = btn.innerHTML;
             try {
-                tempInput.select();
-                tempInput.setSelectionRange(0, 99999); 
+                const el = document.createElement('textarea');
+                el.value = text;
+                document.body.appendChild(el);
+                el.select();
                 document.execCommand('copy');
+                document.body.removeChild(el);
                 
-                // Provide visual feedback
-                buttonElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 13.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg> Copied!';
-                buttonElement.classList.replace('bg-green-600', 'bg-green-800');
-
+                btn.innerHTML = '<span>Saved!</span>';
+                btn.classList.add('bg-green-600');
                 setTimeout(() => {
-                    buttonElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
-                    buttonElement.classList.replace('bg-green-800', 'bg-green-600');
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('bg-green-600');
                 }, 2000);
-
             } catch (err) {
-                console.error('Failed to copy text: ', err);
-                statusMessage.className = 'text-center text-red-600 font-medium';
-                statusMessage.textContent = 'Copy failed.';
-            } finally {
-                document.body.removeChild(tempInput);
+                console.error("Copy failed", err);
             }
         }
     </script>
