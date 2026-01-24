@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuickLink | Ultra Modern Image Hosting</title>
+    <title>ImgtoLink | Ultra Modern Image Hosting</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -12,6 +12,37 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: radial-gradient(circle at top left, #f8fafc, #e2e8f0);
             min-height: 100vh;
+            margin: 0;
+            padding-top: 80px; /* Space for fixed header */
+            padding-bottom: 64px; /* Space for fixed footer */
+        }
+
+        /* Glass header - Fixed to top, full width */
+        .glass-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 20px 0 rgba(31, 38, 135, 0.04);
+        }
+
+        /* Glass footer - Fixed to bottom, full width */
+        .glass-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 -4px 20px 0 rgba(31, 38, 135, 0.04);
         }
 
         .glass-card {
@@ -56,23 +87,39 @@
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="flex flex-col items-center justify-start p-4 md:p-10">
+<body class="flex flex-col items-center justify-start">
 
-    <!-- Header Section -->
-    <header class="w-full max-w-2xl text-center mb-12 animate-fade-in">
-        <div class="inline-flex items-center px-3 py-1 mb-4 text-xs font-bold tracking-widest text-blue-600 uppercase bg-blue-100 rounded-full">
-            Lightning Fast Hosting
+    <!-- Fixed Header Section -->
+    <header class="glass-header h-20">
+        <div class="max-w-6xl mx-auto px-6 h-full flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">
+                    Imgto<span class="text-blue-600">Link</span>
+                </h1>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-6">
+                <div class="inline-flex items-center px-3 py-1 text-[10px] font-bold tracking-widest text-blue-600 uppercase bg-blue-50 rounded-full border border-blue-100">
+                    V2.5 Stable
+                </div>
+                <p class="text-slate-400 text-xs font-medium italic"></p>
+            </div>
         </div>
-        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
-            Quick<span class="text-blue-600">Link</span>
-        </h1>
-        <p class="text-slate-500 text-lg max-w-md mx-auto leading-relaxed">
-            The professional way to transform images into instant public links. Drag, paste, or browse.
-        </p>
     </header>
 
+    <!-- Main Content Intro (Below Header) -->
+    <div class="w-full max-w-2xl text-center mt-12 mb-8 px-4">
+        <h2 class="text-3xl font-bold text-slate-800 mb-2">Upload Assets</h2>
+        <p class="text-slate-500 text-sm">Drag images anywhere to transform them into permanent links via ImgtoLink.</p>
+    </div>
+
     <!-- Main App Wrapper -->
-    <main class="w-full max-w-2xl space-y-8">
+    <main class="w-full max-w-2xl space-y-8 px-4">
         
         <!-- Upload Engine -->
         <div id="dropZone" class="glass-card rounded-3xl p-8 md:p-12 transition-all duration-300 border-2 border-dashed border-slate-200 group">
@@ -111,7 +158,7 @@
         <div id="statusBox" class="text-center h-6 text-sm font-semibold transition-all duration-300"></div>
 
         <!-- Results Section -->
-        <section id="resultsSection" class="hidden space-y-6">
+        <section id="resultsSection" class="hidden space-y-6 pb-4">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-extrabold text-slate-800">Uploaded Assets</h3>
                 <span id="countBadge" class="bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-lg">0 Files</span>
@@ -121,6 +168,18 @@
             </div>
         </section>
     </main>
+
+    <!-- Fixed Footer Section -->
+    <footer class="glass-footer h-14">
+        <div class="max-w-6xl mx-auto px-6 h-full flex items-center justify-between">
+            <p class="text-slate-500 text-[10px] md:text-xs font-medium">
+                &copy; 2024 ImgtoLink. All rights reserved.
+            </p>
+            <div class="flex items-center gap-4">
+                <p class="text-slate-400 text-[10px] md:text-xs font-medium">Powered by ImgBB</p>
+            </div>
+        </div>
+    </footer>
 
     <script>
         const API_KEY = "9e45c2a61b049286d6230275e700a932";
@@ -138,8 +197,6 @@
         // State Management
         let selectedFiles = [];
 
-        // --- File Handling ---
-
         function updateFileList(files) {
             selectedFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
             
@@ -156,7 +213,6 @@
 
         imageInput.addEventListener('change', (e) => updateFileList(e.target.files));
 
-        // Drag & Drop Listeners
         ['dragenter', 'dragover'].forEach(name => {
             dropZone.addEventListener(name, (e) => {
                 e.preventDefault();
@@ -172,7 +228,6 @@
             });
         });
 
-        // Paste Listener
         document.addEventListener('paste', (e) => {
             const items = (e.clipboardData || e.originalEvent.clipboardData).items;
             const pastedFiles = [];
@@ -181,8 +236,6 @@
             }
             if (pastedFiles.length > 0) updateFileList(pastedFiles);
         });
-
-        // --- Upload Logic ---
 
         async function uploadFiles() {
             uploadBtn.disabled = true;
@@ -229,8 +282,6 @@
         uploadBtn.addEventListener('click', () => {
             if (btnText.textContent.includes('Upload')) uploadFiles();
         });
-
-        // --- UI Rendering ---
 
         function renderResultCard(url, name) {
             const div = document.createElement('div');
