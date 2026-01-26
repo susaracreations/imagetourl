@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://autographmarquisbuffet.com/c2/96/c0/c296c00561980caaecf2c15f757a0445.js"></script>
     <title>ImgtoLink | Professional Image Hosting</title>
+    
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="https://i.ibb.co/vvKtw78N/29d29ed5ce34.png">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/mr4ZjCYT/b34dc10f3814.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -16,7 +17,7 @@
             --accent-blue: #3b82f6;
             --glass-bg: rgba(10, 10, 10, 0.7);
             --glass-border: rgba(59, 130, 246, 0.2);
-            --grid-color: rgba(59, 130, 246, 0.15);
+            --grid-color: rgba(59, 130, 246, 0.25);
         }
 
         body {
@@ -38,7 +39,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            perspective: 600px;
+            perspective: 1000px;
             z-index: -2;
             overflow: hidden;
             background: #000;
@@ -46,20 +47,20 @@
 
         .grid-plane {
             position: absolute;
-            top: 0;
+            top: 10%;
             left: -50%;
             width: 200%;
             height: 200%;
             background-image: 
                 linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
                 linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
-            background-size: 50px 50px;
-            transform: rotateX(60deg);
+            background-size: 60px 60px;
+            transform: rotateX(65deg);
             transform-origin: top center;
-            animation: grid-scroll 15s linear infinite;
+            animation: grid-scroll 10s linear infinite;
         }
 
-        /* Horizon Fade */
+        /* Horizon Fade - Improved to allow grid visibility */
         .grid-fade {
             position: absolute;
             top: 0;
@@ -67,15 +68,16 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(to bottom, 
-                #000 0%, 
-                transparent 40%, 
-                rgba(0,0,0,0.5) 100%);
+                rgba(0,0,0,1) 0%, 
+                rgba(0,0,0,0.2) 30%, 
+                transparent 50%,
+                rgba(0,0,0,0.8) 100%);
             pointer-events: none;
         }
 
         @keyframes grid-scroll {
-            0% { transform: rotateX(60deg) translateY(0); }
-            100% { transform: rotateX(60deg) translateY(50px); }
+            0% { transform: rotateX(65deg) translateY(0); }
+            100% { transform: rotateX(65deg) translateY(60px); }
         }
 
         /* Animated Glowing Spots */
@@ -83,7 +85,7 @@
             position: fixed;
             width: 600px;
             height: 600px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0) 70%);
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 70%);
             border-radius: 50%;
             z-index: -1;
             filter: blur(80px);
@@ -117,8 +119,8 @@
 
         .drop-zone-active {
             border-color: var(--accent-blue) !important;
-            background: rgba(59, 130, 246, 0.08);
-            box-shadow: 0 0 50px rgba(59, 130, 246, 0.25);
+            background: rgba(59, 130, 246, 0.12);
+            box-shadow: 0 0 50px rgba(59, 130, 246, 0.3);
         }
 
         .loading-dots:after {
